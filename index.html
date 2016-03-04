@@ -1,0 +1,45 @@
+<html>
+<head>
+  <title>Roguelike</title>
+  <link href='https://fonts.googleapis.com/css?family=Roboto:400,700' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" type="text/css" href="other/jack-of-rogues.css" />
+  <link rel="icon" href="other/icon.ico" "type="image/x-icon" />
+  <script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
+</head>
+<body>
+  <div id="outerDiv">
+    <div id="leftPanel">
+      <div id="topText">It is your turn.</div>
+      <div id="mainArea">
+      </div>
+      <div id="cards">
+        <div class="card" onclick="add_history('Used Power Strike of DOOOM!')"><div class="cardTitle">Power Strike of DOOOM</div><div class="cardCost">costs 14 mana</div><div class="cardText">Perform a basic attack with 120% power.</div></div>
+        <div class="card" onclick="add_history('Used Power Strike of DOOOM!')"><div class="cardTitle">Power Strike of DOOOM</div><div class="cardCost">costs 14 mana</div><div class="cardText">Perform a basic attack with 120% power.</div></div>
+        <div class="basicCard" onclick="game.useCard(-1)"><div class="cardTitle">Basic attack</div></div>
+        <div class="basicCard" onclick="add_history('Item!')"><div class="cardTitle">Use item/Switch equipment</div></div>
+        <div class="basicCard" onclick="add_history('wait!')"><div class="cardTitle">Wait</div></div>
+      </div>
+    </div>
+    <div id="rightPanel">
+      <div id="history">
+      </div>
+      <div id="statusPanel">
+      </div>
+      <div id="timePanel">
+        Food: 10
+      </div>
+    </div>
+    
+  </div>
+  <div id="darkBox" onclick="dismiss_dark_box();">
+  </div>
+  <div id="darkBoxPanel" style="width:500px; height: 300px;">
+    Some stuff here
+  </div>
+  <script type="text/javascript" src="js/basic_util.js"></script>
+  <script type="text/javascript" src="js/display.js"></script>
+  <script type="text/javascript" src="js/rng.js"></script>
+  <script type="text/javascript" src="js/enemies.js"></script>
+  <script type="text/javascript" src="js/rogue.js"></script>
+</body>
+</html>

@@ -1,0 +1,195 @@
+body {
+  background-color: #222;
+  font-family: 'Roberto',sans-serif;
+  font-size: 14px;
+}
+
+a {
+  color: #0012D0;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+p {
+  margin-top: 0px;
+  margin-bottom: 8px;
+}
+
+#darkBox {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 780px;
+  z-index: 9998;
+  background-color: black;
+  filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=80);
+  opacity: 0.8;
+}
+#darkBoxPanel {
+  position: absolute;
+  left: 0px;
+  right: 0px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 100px;
+  background-color: white;
+  border: 1px solid #000;
+  z-index: 9999;
+}
+
+.statusLine {
+  margin-top: 0px;
+  margin-bottom: 4px;
+}
+
+.card {
+  float: left;
+  width: 235px;
+  margin-right: 5px;
+  margin-top: 5px;
+  height: 100px;
+  border: 1px solid #333;
+  padding: 4px;
+  cursor: pointer;
+  background-color: #F6F6E6;
+}
+.basicCard {
+  float: left;
+  width: 108px;
+  margin-right: 5px;
+  margin-top: 5px;
+  height: 100px;
+  border: 1px solid #333;
+  padding: 4px;
+  cursor: pointer;
+  background-color: #F6F6F6;
+}
+.card:hover {
+  border: 1px solid #999;
+}
+.basicCard:hover {
+  border: 1px solid #999;
+}
+.cardTitle {
+  font-weight: 700;
+}
+.cardCost {
+  color: #A011A8;
+}
+.disabledCard {
+  float: left;
+  width: 235px;
+  margin-right: 5px;
+  margin-top: 5px;
+  height: 100px;
+  border: 1px solid #333;
+  padding: 4px;
+  cursor: pointer;
+  background-color: #999999;
+  color: #666666;
+}
+.disabledBasicCard {
+  float: left;
+  width: 108px;
+  margin-right: 5px;
+  margin-top: 5px;
+  height: 100px;
+  border: 1px solid #333;
+  padding: 4px;
+  cursor: pointer;
+  background-color: #F6F6F6;
+}
+.disabledCardCost{
+  color: #666666;
+}
+
+.enemy {
+  float: left;
+  width: 240px;
+  height: 340px;
+  margin-top: 10px;
+  text-align: center;
+}
+.enemySingle {
+  margin-left: 247px;
+}
+.enemyDouble {
+  margin-left: 86px;
+}
+.enemyTriple {
+  margin-left: 5px;
+}
+.enemyTarget {
+  font-weight: bold;
+}
+.point {
+  cursor: pointer;
+}
+
+#leftPanel {
+  width: 750px;
+  height: 750px;
+  position: relative;
+  border-width: 1px;
+  border-style: solid;
+  border-color: #999999;
+  margin: 4px;
+  padding: 6px;
+  float: left;
+  background-color: #E0E0E0;
+}
+
+#rightPanel {
+  width: 342px;
+  height: 750px;
+  position: relative;
+  border-width: 1px;
+  border-style: solid;
+  border-color: #999999;
+  margin: 4px;
+  padding: 6px;
+  float: left;
+  background-color: #E0E0E0;
+}
+
+#outerDiv {
+  width: 1136px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#mainArea {
+  width: 738px;
+  height: 350px;
+  border: 1px solid #333;
+  background-color: #FFFFFF;
+}
+
+#history {
+  height: 550px;
+  overflow: auto;
+}
+
+#cards {
+  overflow: auto;
+}
+
+#statusPanel {
+  height: 170px;
+  overflow:auto;
+  border-top: 1px solid #999999;
+  padding-top: 8px;
+}
+
+.physical {
+  color: #777;
+}
+
+.fire {
+  color: #D00;
+}
