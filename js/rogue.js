@@ -28,28 +28,41 @@ Game = function() {
   this.rngPool.makeNRNGs(NUM_RNGS);
   this.battle = []
   this.currentTarget = 0;
-  this.playerChar = [];
+  this.playerChar = {name: "You", is_player: true, number: -1,
+                     max_hp: 100, max_mp: 100, hp: 100, mp: 100,
+                     str: 10, mag: 10, def: 10, mdef: 10,
+                     cur_str: 10, cur_mag: 10, cur_def: 10, cur_mdef: 10,
+                     min_dmg: 1, max_dmg: 8, min_mag_dmg: 0, max_mag_dmg: 8,
+                     status: []};
   this.animationQueue = [];
   this.waitingForAnimation = false;
 }
 
 Game.prototype.queueAnimation = function(type, params, delay) {
+  /**
+   * Add an animation to the end of the queue, to be performed
+   * type - a string
+   * params - an array
+   * delay - an int, in milliseconds
+   */
   this.animationQueue.push([type, params, delay]);
-
   if (!this.waitingForAnimation) {
     this.performNextAnimation();
   }
 }
 Game.prototype.stackAnimation = function(type, params, delay) {
+  /**
+   * Same as queueAnimation, but the new animation cuts in front of the others.
+   */
   this.animationQueue.shift([type, params, delay]);
   if (!this.waitingForAnimation) {
     this.performNextAnimation();
   }
 }
-
 Game.prototype.performNextAnimation = function() {
   this.waitingForAnimation = false;
   if (this.animationQueue.length == 0) {
+    enable_cards();
     return;
   }
   var loop = true;
@@ -84,7 +97,6 @@ Game.prototype.performNextAnimation = function() {
       case 'append_history':
         append_history(params[0]);
         break;
-        
       default:
         warn('unimplemented animation type: ' + type);
         break;
@@ -94,9 +106,13 @@ Game.prototype.performNextAnimation = function() {
     }
     if (delay > 0) {
       this.waitingForAnimation = true;
-      setTimeout(do_next, delay);
+      disable_cards();
+      setTimeout(do_next_animation, delay);
     }
   }
+}
+function do_next_animation() {
+  game.performNextAnimation();
 }
 
 Game.prototype.switchTarget = function(number) {
@@ -104,12 +120,6 @@ Game.prototype.switchTarget = function(number) {
   switch_target_display(number);
 }
 Game.prototype.startBattle = function(enemy_ids) {
-  this.playerChar = {name: "You", is_player: true, number: -1,
-                     max_hp: 100, max_mp: 100, hp: 100, mp: 100,
-                     str: 10, mag: 10, def: 10, mdef: 10,
-                     cur_str: 10, cur_mag: 10, cur_def: 10, cur_mdef: 10,
-                     min_dmg: 1, max_dmg: 8, min_mag_dmg: 0, max_mag_dmg: 8,
-                     status: []};
   this.battle = [];
   var css_class = enemy_css_class(enemy_ids.length);
   var html = '';
@@ -120,7 +130,7 @@ Game.prototype.startBattle = function(enemy_ids) {
   }
   $('#mainArea').html(html);
   $('#statusPanel').html(player_html(this.playerChar));
-
+  
   if (enemy_ids.length == 3) {
     this.switchTarget(1);
   } else {
@@ -138,21 +148,19 @@ Game.prototype.useCard = function(index) {
   } else {
     card = cards_data[0]; // TO be replaced with real index from hand
   }
-
   if (this.playerChar.mp < card.mana_cost) {
     add_history('You don\'t have enough mana to do that!');
     return;
   }
-  
+  // Okay, time to use this card for real.
+  this.playerChar.mp -= card.mana_cost;
+  update_player_mp(this.playerChar.mp, this.playerChar.max_mp);
   if (index == -1) {
     this.queueAnimation('add_history', ['You attack!'], 0);
   } else {
     this.queueAnimation('add_history', ['You use ' + card.name + '!'], 0);
   }
-  
-  this.playerChar.mp -= card.mana_cost;
-  update_player_mp(this.playerChar.mp, this.playerChar.max_mp);
-  
+
   for (var i = 0; i < card.abilities.length; i++) {
     var ability = card.abilities[i];
     var cur_enemy = this.battle[this.currentTarget];
@@ -166,10 +174,11 @@ Game.prototype.useCard = function(index) {
     }
   }
   
-  var enemy_alive = -1;
+  // Check for dead enemies
+  var enemies_alive = [];
   for (var i = 0; i < this.battle.length; i++) {
     if (this.battle[i].hp > 0) {
-      enemy_alive = i;
+      enemies_alive.push(i);
     } else {
       if (!this.battle[i].faded) {
         this.battle[i].faded = true;
@@ -179,10 +188,13 @@ Game.prototype.useCard = function(index) {
   }
   if (this.battle[this.currentTarget].hp <= 0) {
     var oldTarget = this.currentTarget;
-    if (enemy_alive >= 0) {
-      this.switchTarget(enemy_alive);
+    if (enemies_alive.length > 0) {
+      this.switchTarget(enemies_alive[0]);
     }
     hide_target_display(oldTarget);
+  }
+  for (var i = 0; i < enemies_alive.length; i++) {
+    // this.battle[enemies_alive[i]] fights...
   }
 }
 
@@ -201,7 +213,6 @@ Game.prototype.performPhysicalAttack = function(from_target, to_target, percent)
 
 Game.prototype.endBattle = function() {
 }
-
 
 var game = new Game();
 game.startBattle([0,0,0]);
@@ -227,7 +238,4 @@ function damage_string(from_target, to_target, damage, damage_type) {
     }
   }
   return str;
-}
-function do_next() {
-  game.performNextAnimation();
 }

@@ -38,22 +38,6 @@ var enemies_data = [
   }
 ];
 
-var enemy_cards_data = [
-  {id: 0,
-   name: "Nothing",
-   text: "Does nothing. Appearing in weak enemies' decks, this card just takes up space.",
-   mana_cost: 0,
-   abilities: []
-  },
-
-  {id: 1,
-   name: "Carrot Tackle",
-   text: "Perform an attack with 130% power.",
-   mana_cost: 0,
-   abilities: [ ['attack_percent', 130] ]
-  }
-];
-
 var cards_data = [
   {id: 0,
    name: "Basic Attack",
@@ -64,8 +48,15 @@ var cards_data = [
   
   {id: 1,
    name: "Power Strike",
-   text: "Perform an attack with 130% physical power.",
+   text: "Perform an attack with 133% physical power.",
    mana_cost: 0,
-   abilities: [ ['attack_percent', 130] ]
+   abilities: [ ['attack_percent', 133] ]
+  },
+  
+  {id: 2,
+   name: "Carrot Tackle",
+   text: "Perform an attack with 133% physical power.",
+   mana_cost: 0,
+   abilities: [ ['attack_percent', 133] ]
   },
 ];

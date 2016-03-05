@@ -42,7 +42,6 @@ function status_to_string(status) {
 }
 
 var history_last_entry;
-
 // Display manipulation
 function add_history(string) {
   var history = $('#history');
@@ -128,7 +127,7 @@ function update_player_hp(hp, max_hp) {
   $('#playerHP').html('HP: <span class="' + hp_class + '">' + hp + '/' + max_hp + '</span>');
 }
 function update_player_mp(mp, max_mp) {
-  $('#playerMP').html('HP: <span class="mana">' + mp + '/' + max_mp + '</span>');
+  $('#playerMP').html('MP: <span class="mana">' + mp + '/' + max_mp + '</span>');
 }
 function update_player_status(statuses) {
   var status_string = '';
@@ -146,5 +145,14 @@ function update_enemy(enemy, target) {
 }
 function fade_out_enemy(enemy_number) {
   $('#enemy' + enemy_number).animate({ opacity: 0 });
+}
+
+function disable_cards() {
+  $('.card').toggleClass('card disabledCard');
+  $('.basicCard').toggleClass('basicCard disabledBasicCard');
+}
+function enable_cards() {
+  $('.disabledCard').toggleClass('disabledCard card');
+  $('.disabledBasicCard').toggleClass('disabledBasicCard basicCard');
 }
 

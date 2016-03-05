@@ -89,7 +89,6 @@ p {
   height: 100px;
   border: 1px solid #333;
   padding: 4px;
-  cursor: pointer;
   background-color: #999999;
   color: #666666;
 }
@@ -101,8 +100,8 @@ p {
   height: 100px;
   border: 1px solid #333;
   padding: 4px;
-  cursor: pointer;
-  background-color: #F6F6F6;
+  background-color: #999999;
+  color: #666666;
 }
 .disabledCardCost{
   color: #666666;
