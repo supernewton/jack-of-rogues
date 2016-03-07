@@ -265,7 +265,3 @@ Game.prototype.endBattle = function() {
 
 var game = new Game();
 game.startBattle([0,0,0]);
-
-
-
-

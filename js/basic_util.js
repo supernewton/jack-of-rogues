@@ -37,4 +37,3 @@ function base64enc24(int24) {
   }
   return str;
 }
-
