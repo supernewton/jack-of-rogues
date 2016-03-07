@@ -156,3 +156,6 @@ function enable_cards() {
   $('.disabledBasicCard').toggleClass('disabledBasicCard basicCard');
 }
 
+function update_top_text(text) {
+  $('#topText').html(text);
+}
