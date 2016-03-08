@@ -124,7 +124,8 @@ Game.prototype.startBattle = function(enemy_ids) {
     var enemy = make_enemy(enemy_ids[i], i, get_name_num(enemy_ids, i));
     this.rngPool.shuffle(RNG_SHUFFLER, enemy.deck);
     for (var j = 0; j < enemy.start_hand_size; j++) {
-      
+      var card_num = this.drawCard(enemy.deck, enemy.discard);
+      enemy.hand.push(cards_data[card_num]);
     }
     this.battle.push(enemy);
     html += enemy_html(enemy, css_class);
@@ -152,9 +153,8 @@ Game.prototype.drawCard = function(deck, discard) {
     }
     this.rngPool.shuffle(RNG_SHUFFLER, deck);
   }
-  var card_pos = deck.pop();
-  discard.push(card_pos);
-  return card_pos;
+  var card_num = deck.pop();
+  return card_num;
 }
 
 Game.prototype.resolveCard = function(from_target, to_target, card) {
@@ -226,9 +226,17 @@ Game.prototype.useCard = function(index) {
 }
 
 Game.prototype.enemyAction = function(enemy) {
+  var card_num = this.drawCard(enemy.deck, enemy.discard);
+  enemy.hand.push(cards_data[card_num]);
+  var card;
   switch (enemy.ai) {
     case "simple":
-      this.enemyUseCard(enemy, cards_data[0]); // TODO: actual card from hand
+      if (enemy.hand.length > 0) {
+        card = enemy.hand.pop();
+      } else {
+        card = cards_data[0];
+      }
+      this.enemyUseCard(enemy, card); // TODO: actual card from hand
       break;
     default:
       warn("Unrecognized enemy AI: " + enemy.ai);
