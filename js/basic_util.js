@@ -37,3 +37,8 @@ function base64enc24(int24) {
   }
   return str;
 }
+
+function copy_array(array) {
+  var a = array.slice(0);
+  return a;
+}

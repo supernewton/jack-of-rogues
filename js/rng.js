@@ -3,7 +3,7 @@ var RNG_R = 24;
 var RNG_S = 10;
 var RNG_M = 16777216;
 if (RNG_R <= RNG_S) { error("Illegal RNG parameters"); }
-// PRNG mechanisms.
+// Linear congruential generator.
 function lcg_step(x) {
   return (x*69069+1) % RNG_M;
 }
@@ -12,6 +12,7 @@ RNG = function(seeds) {
   // seeds should be an array of numbers of length RNG_R.
   if (seeds.length < RNG_R) {
     warn("Too few seeds passed to RNG (expected " + RNG_R + "): " + seeds.length);
+    // Shouldn't happen. Pad with whatever.
     for (var i = seeds.length; i < RNG_R; i++) {
       seeds.push(i*i);
     }
@@ -45,6 +46,8 @@ RNG.prototype.getInt = function(min, max) {
   var next = this.getNext();
   return min + (next%range); // yeah, there's some bias, but no one's going to notice ~1/2^24
 }
+// A pool of RNGs, used to have separate RNGs for separate tasks so that, for example,
+// a small difference in combat choice doesn't dramatically alter item rewards.
 RNGPool = function() {
   this.rngs = []
   var d = new Date();
@@ -101,4 +104,8 @@ RNGPool.prototype.shuffle = function(id, list) {
   } else {
     error("Called shuffle with non-existent RNG");
   }
+}
+RNGPool.prototype.selectOne = function(id, list) {
+  var r = this.getInt(id, 0, list.length-1);
+  return list[r];
 }

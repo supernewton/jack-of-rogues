@@ -13,12 +13,10 @@
       <div id="mainArea">
       </div>
       <div id="cards">
-        <div class="card" onclick="add_history('Used Power Strike of DOOOM!')"><div class="cardTitle">Power Strike of DOOOM</div><div class="cardCost">costs 14 mana</div><div class="cardText">Perform a basic attack with 120% power.</div></div>
-        <div class="card" onclick="add_history('Used Power Strike of DOOOM!')"><div class="cardTitle">Power Strike of DOOOM</div><div class="cardCost">costs 14 mana</div><div class="cardText">Perform a basic attack with 120% power.</div></div>
-        <div class="basicCard" onclick="game.useCard(-1)"><div class="cardTitle">Basic attack</div></div>
-        <div class="basicCard" onclick="add_history('Item!')"><div class="cardTitle">Use item / Switch equipment</div></div>
-        <div class="basicCard" onclick="add_history('Wait!')"><div class="cardTitle">Wait</div></div>
-        <div class="basicCard" onclick="add_history('Run!')"><div class="cardTitle">Run (0% success rate)</div></div>
+        <div id="cardAttack" class="basicCard basicCardActive" onclick="game.useCard(-1)"><div class="cardTitle">Basic attack</div></div>
+        <div id="cardItem" class="basicCard basicCardActive" onclick="add_history('Item!')"><div class="cardTitle">Use item / Switch equipment</div></div>
+        <div id="cardWait" class="basicCard basicCardActive" onclick="game.useCard(-3)"><div class="cardTitle">Wait</div></div>
+        <div id="cardRun" class="basicCard basicCardActive" onclick="add_history('Run!')"><div class="cardTitle">Run (0% success rate)</div></div>
       </div>
     </div>
     <div id="rightPanel">
@@ -38,11 +36,11 @@
     Some stuff here
   </div>
   <script type="text/javascript" src="js/basic_util.js"></script>
-  <script type="text/javascript" src="js/display.js"></script>
   <script type="text/javascript" src="js/rng.js"></script>
   <script type="text/javascript" src="js/cards.js"></script>
   <script type="text/javascript" src="js/enemies.js"></script>
   <script type="text/javascript" src="js/string_gen.js"></script>
+  <script type="text/javascript" src="js/display.js"></script>
   <script type="text/javascript" src="js/rogue.js"></script>
 </body>
 </html>

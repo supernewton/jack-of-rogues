@@ -76,31 +76,45 @@ Game.prototype.performNextAnimation = function() {
       case 'nothing':
         break;
       case 'hp':
+        // params: enemy_number (-1 for player char), hp, max_hp
         update_hp(params[0], params[1], params[2]);
         break;
       case 'mp':
+        // params: enemy_number (-1 for player char), mp, max_mp
         update_mp(params[0], params[1], params[2]);
         break;
       case 'status':
+        // params: enemy_number (-1 for player char), statuses
         update_status(params[0], params[1]);
         break;
       case 'fade_out_enemy':
+        // params: enemy_number
         fade_out_enemy(params[0]);
         break;
       case 'add_history':
+        // params: html
         add_history(params[0]);
         break;
       case 'append_history':
+        // params: html
         append_history(params[0]);
         break;
+      case 'add_player_card':
+        // params: card_dom
+        $('#cards').append(params[0]);
+        break;
       default:
-        warn('unimplemented animation type: ' + type);
+        warn('Unimplemented animation type: ' + type);
         break;
     }
-    if (this.animationQueue.length > 0 && delay == 0) {
-      loop = true;
-    }
-    if (delay > 0) {
+    if (delay == 0) {
+      if (this.animationQueue.length > 0) {
+        loop = true;
+      } else {
+        enable_cards();
+        update_top_text('It is your turn.');
+      }
+    } else {
       this.waitingForAnimation = true;
       disable_cards();
       update_top_text('Please wait...');
@@ -131,6 +145,14 @@ Game.prototype.startBattle = function(enemy_ids) {
     html += enemy_html(enemy, css_class);
   }
   $('#mainArea').html(html);
+  
+  this.playerChar.mp = this.playerChar.max_mp;
+  this.playerChar.status = [];
+  this.playerChar.deck = copy_array(this.playerChar.decklist);
+  this.rngPool.shuffle(RNG_SHUFFLER, this.playerChar.deck);
+  for (var i = 0; i < this.playerChar.start_hand_size; i++) {
+    this.playerDrawCard();
+  }
   $('#statusPanel').html(player_html(this.playerChar));
   
   if (enemy_ids.length == 3) {
@@ -157,6 +179,20 @@ Game.prototype.drawCard = function(deck, discard) {
   return card_num;
 }
 
+Game.prototype.playerDrawCard = function() {
+  var card_number = this.drawCard(this.playerChar.deck, this.playerChar.discard);
+  var number = this.playerChar.hand.length;
+  this.playerChar.hand.push(cards_data[card_number]);
+  var card_dom = card_html(cards_data[card_number], number);
+  //$('#cards').append(card_dom);
+  this.queueAnimation('add_player_card', [card_dom], 0);
+}
+Game.prototype.playerRemoveCard = function(index) {
+  this.playerChar.discard.push(this.playerChar.hand[index].id);
+  fade_out_card(index, this.playerChar.hand.length);
+  this.playerChar.hand.splice(index, 1);
+}
+
 Game.prototype.resolveCard = function(from_target, to_target, card) {
   for (var i = 0; i < card.abilities.length; i++) {
     var ability = card.abilities[i];
@@ -176,25 +212,39 @@ Game.prototype.resolveCard = function(from_target, to_target, card) {
 Game.prototype.useCard = function(index) {
   /**
    * The player uses a card. Index is the index into the player's hand.
+   * This is the main entry point to resolve a turn.
    */
+  // Player's UI should be disabled during animation, but still don't do anything if this gets called somehow
   if (this.waitingForAnimation) {
     return;
   }
   var card;
   if (index == -1) {
     card = cards_data[0];
+  } else if (index == -2) {
+    card = cards_data[1];
+  } else if (index == -3) {
+    card = cards_data[2];
   } else {
-    card = cards_data[0]; // TO be replaced with real index from hand
+    if (index < 0 || index >= this.playerChar.hand.length) {
+      error("Card index out of bounds!");
+      return;
+    }
+    card = this.playerChar.hand[index];
   }
-  if (this.playerChar.mp < card.mana_cost) {
+  var mana_cost = card.mana_cost == undefined ? 0 : card.mana_cost;
+  // Check mana requirements before doing anything else.
+  if (this.playerChar.mp < mana_cost) {
     add_history('You don\'t have enough mana to do that!');
     return;
   }
   // Okay, time to use this card for real.
-  this.playerChar.mp -= card.mana_cost;
+  if (index >= 0) {
+    this.playerRemoveCard(index);
+  }
+  this.playerChar.mp -= mana_cost;
   update_player_mp(this.playerChar.mp, this.playerChar.max_mp);
   this.queueAnimation('add_history', [use_card_string(this.playerChar, card)], 0);
-
   this.resolveCard(this.playerChar, this.battle[this.currentTarget], card);
   
   // Check for dead enemies
@@ -209,6 +259,7 @@ Game.prototype.useCard = function(index) {
       }
     }
   }
+  // Switch target if current target is dead
   if (this.battle[this.currentTarget].hp <= 0) {
     var oldTarget = this.currentTarget;
     if (enemies_alive.length > 0) {
@@ -216,13 +267,17 @@ Game.prototype.useCard = function(index) {
     }
     hide_target_display(oldTarget);
   }
+  // Still alive enemies perform actions
   for (var i = 0; i < enemies_alive.length; i++) {
     this.enemyAction(this.battle[enemies_alive[i]]);
   }
-  
+  // Check player death
   if (this.playerChar.hp <= 0) {
-    //  TODO: Death...
+    show_dark_box("You are dead!");
+    // TODO: death...
   }
+  // End of turn
+  this.playerDrawCard();
 }
 
 Game.prototype.enemyAction = function(enemy) {
@@ -231,27 +286,38 @@ Game.prototype.enemyAction = function(enemy) {
   var card;
   switch (enemy.ai) {
     case "simple":
-      if (enemy.hand.length > 0) {
-        card = enemy.hand.pop();
-      } else {
-        card = cards_data[0];
+      // Use cards randomly
+      var candidate_indices = [];
+      for (var i = 0; i < enemy.hand.length; i++) {
+        if (get_mana_cost(enemy.hand[i]) <= enemy.mp) {
+          candidate_indices.push(i);
+        }
       }
-      this.enemyUseCard(enemy, card); // TODO: actual card from hand
+      if (candidate_indices.length == 0) {
+        card = BASIC_ATTACK_CARD;
+      } else if (candidate_indices.length == 1) {
+        var idx = candidate_indices[0];
+        card = enemy.hand[idx];
+        enemy.hand.splice(idx, 1);
+      } else {
+        var idx = this.rngPool.chooseOne(RNG_COMBAT, candidate_indices);
+        card = enemy.hand[idx];
+        enemy.hand.splice(idx, 1);
+      }
+      this.enemyUseCard(enemy, card);
       break;
     default:
       warn("Unrecognized enemy AI: " + enemy.ai);
-      this.enemyUseCard(enemy, cards_data[0]);
+      this.enemyUseCard(enemy, BASIC_ATTACK_CARD);
   }
 }
-
 Game.prototype.enemyUseCard = function(enemy, card) {
   /**
    * Enemy uses a card. card is a full card data object.
    */
   this.queueAnimation('add_history', [use_card_string(enemy, card)], 0);
-  enemy.mp -= card.mana_cost;
+  enemy.mp -= get_mana_cost(card);
   this.queueAnimation('mp', [enemy.number, enemy.mp, enemy.max_mp], 0);
-
   this.resolveCard(enemy, this.playerChar, card);
 }
 

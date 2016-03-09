@@ -1,46 +1,3 @@
-// HTML generation functions
-function enemy_css_class(number_of_enemies) {
-  switch (number_of_enemies) {
-    case 1:
-	  return "enemySingle";
-	case 2:
-	  return "enemyDouble";
-	case 3:
-	  return "enemyTriple";
-	default:
-	  warn("Unsupported enemy count: " + number_of_enemies);
-	  return "";
-  }
-}
-function status_html(status) {
-  return '';
-}
-function enemy_inner_html(enemy, target) {
-  var target_html = target ? 'Targeting' : '<a class="point" onclick="game.switchTarget(' + enemy.number + ')">Switch target</a>';
-  return '<img src="img/' + enemy.img +'" width="' + enemy.width + ' height="' + enemy.height + '" />' +
-         '<p class="statusLine enemyName">' + enemy.name + '</p>' +
-         '<p class="statusLine enemyHP">HP: ' + enemy.hp + '/' + enemy.max_hp + '</p>' +
-         '<p class="statusLine enemyMP">MP: ' + enemy.mp + '/' + enemy.max_mp + '</p>' +
-         '<p class="statusLine enemyStatus">' + status_html(enemy.status) + '</p>' +
-         '<p class="statusLine enemyTarget">' + target_html + '</p>';
-}
-function enemy_html(enemy, css_class) {
-  return '<div id="enemy' + enemy.number + '" class="enemy ' + css_class + '">' +
-            enemy_inner_html(enemy, true) +
-         '</div>';
-}
-function player_html(player_char) {
-  return  '<p class="statusLine" id="playerHP">HP: <span class="healthy">' + player_char.hp + '/' + player_char.max_hp + '</span></p>' +
-          '<p class="statusLine" id="playerMP">MP: <span class="mana">' + player_char.mp + '/' + player_char.max_mp + '</span></p>' +
-          '<p class="statusLine" id="playerStatus">' + status_html(status) + '</p>';
-}
-function status_to_string(status) {
-  switch (status[0]) {
-    default:
-      return status[0];
-  }
-}
-
 var history_last_entry;
 // Display manipulation
 function add_history(string) {
@@ -147,13 +104,27 @@ function fade_out_enemy(enemy_number) {
   $('#enemy' + enemy_number).animate({ opacity: 0 });
 }
 
+function remove_card_to_remove() {
+  $('#cardToRemove').remove();
+}
+function fade_out_card(index, count) {
+  $('#card' + index).animate({opacity: 0}, 400);
+  $('#card' + index).attr('id', 'cardToRemove');
+  for (var i=index+1; i<count; i++) {
+    $('#card' + i).attr('onclick', card_onclick_code(i-1));
+    $('#card' + i).attr('id', 'card' + (i-1));
+  }
+  setTimeout(remove_card_to_remove, 400);
+}
+
+
 function disable_cards() {
-  $('.card').toggleClass('card disabledCard');
-  $('.basicCard').toggleClass('basicCard disabledBasicCard');
+  $('.cardActive').toggleClass('cardActive cardDisabled');
+  $('.basicCardActive').toggleClass('basicCardActive basicCardDisabled');
 }
 function enable_cards() {
-  $('.disabledCard').toggleClass('disabledCard card');
-  $('.disabledBasicCard').toggleClass('disabledBasicCard basicCard');
+  $('.cardDisabled').toggleClass('cardDisabled cardActive');
+  $('.basicCardDisabled').toggleClass('basicCardDisabled basicCardActive');
 }
 
 function update_top_text(text) {

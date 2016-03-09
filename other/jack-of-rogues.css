@@ -49,63 +49,56 @@ p {
 
 .card {
   float: left;
-  width: 235px;
+  width: 229px;
   margin-right: 5px;
   margin-top: 5px;
   height: 100px;
   border: 1px solid #333;
   padding: 4px;
+}
+.cardActive {
   cursor: pointer;
   background-color: #F6F6E6;
 }
+.cardActive:hover {
+  border: 1px solid #999;
+}
+.cardDisabled {
+  background-color: #999999;
+  color: #666666;
+}
+.cardCostDisabled {
+  color: #666666;
+}
 .basicCard {
   float: left;
-  width: 108px;
+  width: 107px;
   margin-right: 5px;
   margin-top: 5px;
   height: 100px;
   border: 1px solid #333;
   padding: 4px;
+}
+.basicCardActive {
   cursor: pointer;
   background-color: #F6F6F6;
 }
-.card:hover {
+.basicCardActive:hover {
   border: 1px solid #999;
 }
-.basicCard:hover {
-  border: 1px solid #999;
+.basicCardDisabled {
+  background-color: #999999;
+  color: #666666;
 }
+
 .cardTitle {
   font-weight: 700;
 }
 .cardCost {
   color: #A011A8;
 }
-.disabledCard {
-  float: left;
-  width: 235px;
-  margin-right: 5px;
-  margin-top: 5px;
-  height: 100px;
-  border: 1px solid #333;
-  padding: 4px;
-  background-color: #999999;
-  color: #666666;
-}
-.disabledBasicCard {
-  float: left;
-  width: 108px;
-  margin-right: 5px;
-  margin-top: 5px;
-  height: 100px;
-  border: 1px solid #333;
-  padding: 4px;
-  background-color: #999999;
-  color: #666666;
-}
-.disabledCardCost{
-  color: #666666;
-}
+
+
 
 .enemy {
   float: left;
@@ -176,6 +169,7 @@ p {
 
 #cards {
   overflow: auto;
+  height: 375px;
 }
 
 #statusPanel {

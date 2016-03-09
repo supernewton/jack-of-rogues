@@ -14,7 +14,7 @@ function get_name_num(enemy_ids, idx) {
 function make_enemy(eid, num, name_num) {
   var e = enemies_data[eid];
   var nummed_name = name_num == 0 ? e.name : e.name + ' #' + name_num;
-  var new_deck = e.cards.slice(0); // make copy
+  var new_deck = copy_array(e.cards);
   var a = {id: eid, number: num, is_player: false, faded: false,
            name: nummed_name, img: e.img, width: e.width, height: e.height,
            max_hp: e.hp, max_mp: e.mp, str: e.str, def: e.def, mag: e.mag, mdef: e.mdef,
@@ -32,7 +32,9 @@ function make_player_char() {
          cur_str: 10, cur_mag: 10, cur_def: 10, cur_mdef: 10,
          min_dmg: 1, max_dmg: 8, min_mag_dmg: 0, max_mag_dmg: 8,
          mp_penalty_percent: 0,
-         status: []}
+         decklist: [5, 5, 5, 5, 5, 7, 7, 7, 7, 7],
+         deck: [], discard: [], hand: [], start_hand_size: 3,
+         status: []};
 }
 
 var enemies_data = [
@@ -42,6 +44,6 @@ var enemies_data = [
    hp: 30, mp: 2, str: 7, def: 2, mag: 0, mdef: 2,
    passives: [],
    ai: "simple",
-   cards: [0, 0, 0, 0, 0, 3, 3, 3], start_hand_size: 0
+   cards: [0, 0, 0, 0, 0, 6, 6, 6], start_hand_size: 0
   }
 ];
