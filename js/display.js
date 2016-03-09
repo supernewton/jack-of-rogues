@@ -1,5 +1,4 @@
 var history_last_entry;
-// Display manipulation
 function add_history(string) {
   var history = $('#history');
   var entry = $('<p>', {text: string});

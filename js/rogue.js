@@ -142,9 +142,8 @@ Game.prototype.startBattle = function(enemy_ids) {
       enemy.hand.push(cards_data[card_num]);
     }
     this.battle.push(enemy);
-    html += enemy_html(enemy, css_class);
+    $('#mainArea').append(get_enemy_html(enemy, css_class));
   }
-  $('#mainArea').html(html);
   
   this.playerChar.mp = this.playerChar.max_mp;
   this.playerChar.status = [];
@@ -153,7 +152,8 @@ Game.prototype.startBattle = function(enemy_ids) {
   for (var i = 0; i < this.playerChar.start_hand_size; i++) {
     this.playerDrawCard();
   }
-  $('#statusPanel').html(player_html(this.playerChar));
+  update_hp(-1, this.playerChar.hp, this.playerChar.max_hp);
+  update_mp(-1, this.playerChar.mp, this.playerChar.max_mp);
   
   if (enemy_ids.length == 3) {
     this.switchTarget(1);
@@ -244,7 +244,7 @@ Game.prototype.useCard = function(index) {
   }
   this.playerChar.mp -= mana_cost;
   update_player_mp(this.playerChar.mp, this.playerChar.max_mp);
-  this.queueAnimation('add_history', [use_card_string(this.playerChar, card)], 0);
+  this.queueAnimation('add_history', [get_player_use_card_inner_html(card)], 0);
   this.resolveCard(this.playerChar, this.battle[this.currentTarget], card);
   
   // Check for dead enemies
@@ -315,7 +315,7 @@ Game.prototype.enemyUseCard = function(enemy, card) {
   /**
    * Enemy uses a card. card is a full card data object.
    */
-  this.queueAnimation('add_history', [use_card_string(enemy, card)], 0);
+  this.queueAnimation('add_history', [get_enemy_use_card_inner_html(enemy, card)], 0);
   enemy.mp -= get_mana_cost(card);
   this.queueAnimation('mp', [enemy.number, enemy.mp, enemy.max_mp], 0);
   this.resolveCard(enemy, this.playerChar, card);
@@ -331,7 +331,7 @@ Game.prototype.performPhysicalAttack = function(from_target, to_target, percent)
     to_target.hp = 0;
   }
   this.queueAnimation('hp', [to_target.number, to_target.hp, to_target.max_hp], 0)
-  this.queueAnimation('append_history', [damage_string(from_target, to_target, damage, 'physical')], 200);
+  this.queueAnimation('append_history', [get_damage_inner_html(from_target, to_target, damage, 'physical')], 200);
 }
 
 Game.prototype.endBattle = function() {
