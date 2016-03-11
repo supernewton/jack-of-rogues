@@ -10,13 +10,20 @@
   <div id="outerDiv">
     <div id="leftPanel">
       <div id="topText">It is your turn.</div>
-      <div id="mainArea">
+      <div id="battleArea" class="topArea hide">
       </div>
-      <div id="cards">
-        <div id="cardAttack" class="basicCard basicCardActive" onclick="game.useCard(-1)"><div class="cardTitle">Basic attack</div></div>
-        <div id="cardItem" class="basicCard basicCardActive" onclick="add_history('Item!')"><div class="cardTitle">Use item / Switch equipment</div></div>
-        <div id="cardWait" class="basicCard basicCardActive" onclick="game.useCard(-3)"><div class="cardTitle">Wait</div></div>
-        <div id="cardRun" class="basicCard basicCardActive" onclick="add_history('Run!')"><div class="cardTitle">Run (0% success rate)</div></div>
+      <div id="exploreArea" class="topArea">
+      </div>
+      <div id="cards" class="bottomArea hide">
+        <div id="basicCards">
+          <div id="cardAttack" class="basicCard basicCardActive" onclick="game.useCard(-1)"><div class="cardTitle">Basic attack</div></div>
+          <div id="cardItem" class="basicCard basicCardActive" onclick="add_history('Item!')"><div class="cardTitle">Use item</div></div>
+          <div id="cardWait" class="basicCard basicCardActive" onclick="game.useCard(-3)"><div class="cardTitle">Wait</div></div>
+          <div id="cardRun" class="basicCard basicCardActive" onclick="add_history('Run!')"><div class="cardTitle">Run (0% success rate)</div></div>
+        </div>
+      </div>
+      <div id="areaText" class="bottomArea">
+        <a style="cursor:pointer" onclick="game.startBattle([0, 0, 0])">Start Battle</a>
       </div>
     </div>
     <div id="rightPanel">

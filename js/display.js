@@ -129,3 +129,42 @@ function enable_cards() {
 function update_top_text(text) {
   $('#topText').html(text);
 }
+
+var map_is_initialized = false;
+const MAP_WIDTH = 9;
+const MAP_HEIGHT = 6;
+var map_cell_divs = [];
+var map_top_div;
+function initialize_map_divs() {
+  if (map_is_initialized) {
+    warn('initialize_map_divs called twice!');
+    return;
+  }
+  map_top_div = $('<div/>', {id: 'map'});
+  for (var i=0; i<MAP_HEIGHT; i++) {  
+    var map_row = $('<div/>', {class: 'mapRow'});
+    map_top_div.append(map_row);
+    map_cell_divs.push([])
+    for (var j=0; j<MAP_WIDTH; j++) {
+      var map_cell = $('<div/>', {class: 'mapCell'});
+      map_row.append(map_cell);
+      map_cell_divs[i].push(map_cell);
+    }
+  }
+  $('#exploreArea').append(map_top_div);
+  map_is_initialized = true;
+}
+
+function display_battle_mode() {
+  $('#battleArea').toggleClass('hide', false);
+  $('#exploreArea').toggleClass('hide', true);
+  $('#cards').toggleClass('hide', false);
+  $('#areaText').toggleClass('hide', true);
+}
+
+function display_explore_mode() {
+  $('#battleArea').toggleClass('hide', true);
+  $('#exploreArea').toggleClass('hide', false);
+  $('#cards').toggleClass('hide', true);
+  $('#areaText').toggleClass('hide', false);
+}

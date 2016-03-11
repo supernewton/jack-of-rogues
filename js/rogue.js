@@ -26,11 +26,16 @@ function apply_percent(raw, percent) {
 Game = function() {
   this.rngPool = new RNGPool();
   this.rngPool.makeNRNGs(NUM_RNGS);
+  this.animationQueue = [];
+  this.waitingForAnimation = false;
+  this.state = "explore";
+  
+  // Battle related game state
   this.battle = []
   this.currentTarget = 0;
   this.playerChar = make_player_char();
-  this.animationQueue = [];
-  this.waitingForAnimation = false;
+  
+  // Exploration related game state
 }
 
 Game.prototype.queueAnimation = function(type, params, delay) {
@@ -126,11 +131,8 @@ function do_next_animation() {
   game.performNextAnimation();
 }
 
-Game.prototype.switchTarget = function(number) {
-  this.currentTarget = number;
-  switch_target_display(number);
-}
 Game.prototype.startBattle = function(enemy_ids) {
+  this.state = "battle";
   this.battle = [];
   var css_class = enemy_css_class(enemy_ids.length);
   var html = '';
@@ -142,7 +144,7 @@ Game.prototype.startBattle = function(enemy_ids) {
       enemy.hand.push(cards_data[card_num]);
     }
     this.battle.push(enemy);
-    $('#mainArea').append(get_enemy_html(enemy, css_class));
+    $('#battleArea').append(get_enemy_html(enemy, css_class));
   }
   
   this.playerChar.mp = this.playerChar.max_mp;
@@ -160,6 +162,12 @@ Game.prototype.startBattle = function(enemy_ids) {
   } else {
     this.switchTarget(0);
   }
+  
+  display_battle_mode();
+}
+Game.prototype.switchTarget = function(number) {
+  this.currentTarget = number;
+  switch_target_display(number);
 }
 
 Game.prototype.drawCard = function(deck, discard) {
@@ -184,7 +192,6 @@ Game.prototype.playerDrawCard = function() {
   var number = this.playerChar.hand.length;
   this.playerChar.hand.push(cards_data[card_number]);
   var card_dom = card_html(cards_data[card_number], number);
-  //$('#cards').append(card_dom);
   this.queueAnimation('add_player_card', [card_dom], 0);
 }
 Game.prototype.playerRemoveCard = function(index) {
@@ -276,6 +283,9 @@ Game.prototype.useCard = function(index) {
     show_dark_box("You are dead!");
     // TODO: death...
   }
+  if (enemies_alive.length == 0) {
+    this.endBattle();
+  }
   // End of turn
   this.playerDrawCard();
 }
@@ -335,7 +345,9 @@ Game.prototype.performPhysicalAttack = function(from_target, to_target, percent)
 }
 
 Game.prototype.endBattle = function() {
+  show_dark_box('You win!');
 }
 
 var game = new Game();
-game.startBattle([0,0,0]);
+initialize_map_divs();
+display_map();
