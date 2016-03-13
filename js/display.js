@@ -1,26 +1,28 @@
 var history_last_entry;
+var history_div = $('#history');
 function add_history(string) {
-  var history = $('#history');
   var entry = $('<p>', {text: string});
-  history.append(entry);
+  history_div.append(entry);
   history_last_entry = entry;
-  history.scrollTop(history.prop('scrollHeight'));
+  history_div.scrollTop(history_div.prop('scrollHeight'));
 }
 function append_history(string) {
   var old_html = history_last_entry.html();
   var new_html = old_html + string;
   history_last_entry.html(new_html);
-  var history = $('#history');
-  history.scrollTop(history.prop('scrollHeight'));
+  history_div.scrollTop(history_div.prop('scrollHeight'));
 }
+
+var dark_box_div = $('#darkBox');
+var dark_box_panel_div = $('#darkBoxPanel');
 function dismiss_dark_box() {
-  $('#darkBox').css('display', 'none');
-  $('#darkBoxPanel').css('display', 'none');
+  dark_box_div.css('display', 'none');
+  dark_box_panel_div.css('display', 'none');
 }
 function show_dark_box(html) {
-  $('#darkBox').css('display', 'block');
-  $('#darkBoxPanel').css('display', 'block');
-  $('#darkBoxPanel').html(html);
+  dark_box_div.css('display', 'block');
+  dark_box_panel_div.css('display', 'block');
+  dark_box_panel_div.html(html);
 }
 function switch_target_display(number) {
   var enemy = $('#enemy' + number);
@@ -74,17 +76,21 @@ function update_enemy_status(enemy_number, statuses) {
   }
   $('#enemy' + enemy_number).children('.enemyStatus').html(status_string);
 }
+
+var player_hp_div = $('#playerHP');
 function update_player_hp(hp, max_hp) {
   var hp_class = '';
   var hp_percent = hp / max_hp;
   if (hp_percent > 0.5) { hp_class = 'healthy'; }
   else if (hp_percent > 0.25) { hp_class = 'injured'; }
   else { hp_class = 'nearDeath'; }
-  $('#playerHP').html('HP: <span class="' + hp_class + '">' + hp + '/' + max_hp + '</span>');
+  player_hp_div .html('HP: <span class="' + hp_class + '">' + hp + '/' + max_hp + '</span>');
 }
+var player_mp_div = $('#playerMP');
 function update_player_mp(mp, max_mp) {
-  $('#playerMP').html('MP: <span class="mana">' + mp + '/' + max_mp + '</span>');
+  player_mp_div.html('MP: <span class="mana">' + mp + '/' + max_mp + '</span>');
 }
+var player_status_div = $('#playerStatus');
 function update_player_status(statuses) {
   var status_string = '';
   for (var i = 0; i < statuses.length; i++) {
@@ -93,7 +99,7 @@ function update_player_status(statuses) {
       status_string += ', ';
     }
   }
-  $('#playerStatus').html(status_string);
+  player_status_div.html(status_string);
 }
 
 function update_enemy(enemy, target) {
@@ -115,7 +121,6 @@ function fade_out_card(index, count) {
   }
   setTimeout(remove_card_to_remove, 400);
 }
-
 
 function disable_cards() {
   $('.cardActive').toggleClass('cardActive cardDisabled');
@@ -155,22 +160,27 @@ function initialize_map_divs() {
   map_is_initialized = true;
 }
 
+var map_player_img = $('#mapPlayer');
 function move_map_player(x, y) {
   var x_in_pixels = MAP_CELL_PIXELS*x;
   var y_in_pixels = MAP_CELL_PIXELS*y;
-  $('#mapPlayer').animate({left: x_in_pixels, top: y_in_pixels});
+  map_player_img.animate({left: x_in_pixels, top: y_in_pixels});
 }
 
+var battle_area_div = $('#battleArea');
+var explore_area_div = $('#exploreArea');
+var cards_div = $('#cards');
+var area_text_div = $('#areaText');
 function display_battle_mode() {
-  $('#battleArea').toggleClass('hide', false);
-  $('#exploreArea').toggleClass('hide', true);
-  $('#cards').toggleClass('hide', false);
-  $('#areaText').toggleClass('hide', true);
+  battle_area_div.toggleClass('hide', false);
+  explore_area_div.toggleClass('hide', true);
+  cards_div.toggleClass('hide', false);
+  area_text_div.toggleClass('hide', true);
 }
 
 function display_explore_mode() {
-  $('#battleArea').toggleClass('hide', true);
-  $('#exploreArea').toggleClass('hide', false);
-  $('#cards').toggleClass('hide', true);
-  $('#areaText').toggleClass('hide', false);
+  battle_area_div.toggleClass('hide', true);
+  explore_area_div.toggleClass('hide', false);
+  cards_div.toggleClass('hide', true);
+  area_text_div.toggleClass('hide', false);
 }
