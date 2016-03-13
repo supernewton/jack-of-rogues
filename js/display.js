@@ -133,26 +133,32 @@ function update_top_text(text) {
 var map_is_initialized = false;
 const MAP_WIDTH = 9;
 const MAP_HEIGHT = 6;
+const MAP_CELL_PIXELS = 50;
 var map_cell_divs = [];
-var map_top_div;
 function initialize_map_divs() {
   if (map_is_initialized) {
     warn('initialize_map_divs called twice!');
     return;
   }
-  map_top_div = $('<div/>', {id: 'map'});
+  var map_top_div = $('#map');
   for (var i=0; i<MAP_HEIGHT; i++) {  
     var map_row = $('<div/>', {class: 'mapRow'});
     map_top_div.append(map_row);
     map_cell_divs.push([])
     for (var j=0; j<MAP_WIDTH; j++) {
-      var map_cell = $('<div/>', {class: 'mapCell'});
+      var map_click_code = 'game.clickMapCell(' + j + ',' + i + ')';
+      var map_cell = $('<div/>', {class: 'mapCell', onclick: map_click_code});
       map_row.append(map_cell);
       map_cell_divs[i].push(map_cell);
     }
   }
-  $('#exploreArea').append(map_top_div);
   map_is_initialized = true;
+}
+
+function move_map_player(x, y) {
+  var x_in_pixels = MAP_CELL_PIXELS*x;
+  var y_in_pixels = MAP_CELL_PIXELS*y;
+  $('#mapPlayer').animate({left: x_in_pixels, top: y_in_pixels});
 }
 
 function display_battle_mode() {

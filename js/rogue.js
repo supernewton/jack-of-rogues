@@ -36,6 +36,9 @@ Game = function() {
   this.playerChar = make_player_char();
   
   // Exploration related game state
+  this.map = [];
+  this.playerX = 0;
+  this.playerY = 0;
 }
 
 Game.prototype.queueAnimation = function(type, params, delay) {
@@ -329,6 +332,7 @@ Game.prototype.enemyUseCard = function(enemy, card) {
   enemy.mp -= get_mana_cost(card);
   this.queueAnimation('mp', [enemy.number, enemy.mp, enemy.max_mp], 0);
   this.resolveCard(enemy, this.playerChar, card);
+  enemy.discard.push(card.id);
 }
 
 Game.prototype.performPhysicalAttack = function(from_target, to_target, percent) {
@@ -348,6 +352,13 @@ Game.prototype.endBattle = function() {
   show_dark_box('You win!');
 }
 
+Game.prototype.clickMapCell = function(x, y) {
+  // Note: Origin is top left, positive y goes downwards
+  move_map_player(x, y);
+  playerX = x;
+  playerY = y;
+
+}
+
 var game = new Game();
 initialize_map_divs();
-display_map();

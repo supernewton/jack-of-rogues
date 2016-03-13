@@ -13,13 +13,16 @@
       <div id="battleArea" class="topArea hide">
       </div>
       <div id="exploreArea" class="topArea">
+        <div id="map">
+          <img id="mapPlayer" src="img/map_player.png" class="mapEntity" width="50" height="50" style="left:0px;top:0px;"/>
+        </div>
       </div>
       <div id="cards" class="bottomArea hide">
         <div id="basicCards">
           <div id="cardAttack" class="basicCard basicCardActive" onclick="game.useCard(-1)"><div class="cardTitle">Basic attack</div></div>
-          <div id="cardItem" class="basicCard basicCardActive" onclick="add_history('Item!')"><div class="cardTitle">Use item</div></div>
+          <div id="cardItem" class="basicCard basicCardActive" onclick="add_history('Items not implemented yet.')"><div class="cardTitle">Use item</div></div>
           <div id="cardWait" class="basicCard basicCardActive" onclick="game.useCard(-3)"><div class="cardTitle">Wait</div></div>
-          <div id="cardRun" class="basicCard basicCardActive" onclick="add_history('Run!')"><div class="cardTitle">Run (0% success rate)</div></div>
+          <div id="cardRun" class="basicCard basicCardActive" onclick="add_history('Running not implemented yet.')"><div class="cardTitle">Run (0% success rate)</div></div>
         </div>
       </div>
       <div id="areaText" class="bottomArea">
