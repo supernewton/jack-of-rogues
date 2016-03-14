@@ -24,19 +24,16 @@ function show_dark_box(html) {
   dark_box_panel_div.css('display', 'block');
   dark_box_panel_div.html(html);
 }
-function switch_target_display(number) {
-  var enemy = $('#enemy' + number);
-  enemy.children('.enemyTarget').html('Targeting');
-  for (var i=0; i<3; i++) {
-    if (i != number) {
-      $('#enemy' + i).children('.enemyTarget').html(
-        '<a class="point" onclick="game.switchTarget(' + i + ')">Switch target</a>');
-    }
-  }
+function switch_target_display(number, old_number) {
+  var new_enemy_target = $('#enemy' + number).children('.enemyTarget');
+  new_enemy_target.html('Targeting');
+  var old_enemy_target = $('#enemy' + old_number).children('.enemyTarget');
+  old_enemy_target.text('');
+  old_enemy_target.append(get_switch_target_html(old_number));
 }
 function hide_target_display(number) {
-  var enemy = $('#enemy' + number);
-  enemy.children('.enemyTarget').html('');
+  var enemy_target = $('#enemy' + number).children('.enemyTarget');
+  enemy_target.html('');
 }
 
 function update_hp(number, hp, max_hp) {
@@ -102,9 +99,6 @@ function update_player_status(statuses) {
   player_status_div.html(status_string);
 }
 
-function update_enemy(enemy, target) {
-  $('#enemy' + enemy.number).html(enemy_inner_html(enemy, target));
-}
 function fade_out_enemy(enemy_number) {
   $('#enemy' + enemy_number).animate({ opacity: 0 });
 }
@@ -113,11 +107,13 @@ function remove_card_to_remove() {
   $('#cardToRemove').remove();
 }
 function fade_out_card(index, count) {
-  $('#card' + index).animate({opacity: 0}, 400);
-  $('#card' + index).attr('id', 'cardToRemove');
+  var selected_card = $('#card' + index);
+  selected_card.animate({opacity: 0}, 400);
+  selected_card.attr('id', 'cardToRemove');
   for (var i=index+1; i<count; i++) {
-    $('#card' + i).attr('onclick', card_onclick_code(i-1));
-    $('#card' + i).attr('id', 'card' + (i-1));
+    var card_i = $('#card' + i);
+    card_i.attr('onclick', card_onclick_code(i-1));
+    card_i.attr('id', 'card' + (i-1));
   }
   setTimeout(remove_card_to_remove, 400);
 }

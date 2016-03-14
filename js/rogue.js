@@ -169,8 +169,8 @@ Game.prototype.startBattle = function(enemy_ids) {
   display_battle_mode();
 }
 Game.prototype.switchTarget = function(number) {
+  switch_target_display(number, this.currentTarget);
   this.currentTarget = number;
-  switch_target_display(number);
 }
 
 Game.prototype.drawCard = function(deck, discard) {

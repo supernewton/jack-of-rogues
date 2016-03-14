@@ -82,11 +82,18 @@ function get_enemy_html(enemy, css_class) {
   var hp_html = $('<p/>', {class: 'statusLine enemyHP', text: "HP: " + enemy.hp + '/' + enemy.max_hp});
   var mp_html = $('<p/>', {class: 'statusLine enemyMP', text: "MP: " + enemy.mp + '/' + enemy.max_mp});
   var status_html = $('<p/>', {class: 'statusLine enemyStatus'});
-  var target_html = $('<p/>', {class: 'statusLine enemyTarget', text: 'Targeting'});
+  var target_html = $('<p/>', {class: 'statusLine enemyTarget'});
+  target_html.append(get_switch_target_html(enemy.number));
 
   var enemy_html = $('<div/>', {id: 'enemy' + enemy.number, class: 'enemy ' + css_class});
   enemy_html.append(img_html, name_html, hp_html, mp_html, status_html, target_html);
   return enemy_html;
+}
+
+function get_switch_target_html(enemy_number) {
+  var onclick_code = 'game.switchTarget(' + enemy_number + ')';
+  var a = $('<a/>', {class: 'point', onclick: onclick_code, text: 'Switch target'});
+  return a;
 }
 
 function card_html(card, pos) {
