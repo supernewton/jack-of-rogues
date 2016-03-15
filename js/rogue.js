@@ -39,6 +39,12 @@ Game = function() {
   this.map = [];
   this.playerX = 0;
   this.playerY = 0;
+  for (var i=0; i<MAP_HEIGHT; i++) {
+    this.map.push([]);
+    for (var j=0; j<MAP_WIDTH; j++) {
+       this.map[i].push(0);
+    }
+  }
 }
 
 Game.prototype.queueAnimation = function(type, params, delay) {
@@ -354,10 +360,13 @@ Game.prototype.endBattle = function() {
 
 Game.prototype.clickMapCell = function(x, y) {
   // Note: Origin is top left, positive y goes downwards
-  move_map_player(x, y);
-  playerX = x;
-  playerY = y;
-
+  var dx = this.playerX - x;
+  var dy = this.playerY - y;
+  if (Math.abs(dx) + Math.abs(dy) == 1) {
+    move_map_player(x, y);
+    this.playerX = x;
+    this.playerY = y;
+  }
 }
 
 var game = new Game();
