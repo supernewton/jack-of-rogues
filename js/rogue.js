@@ -101,7 +101,7 @@ Game.prototype.performNextAnimation = function() {
         // params: enemy_number (-1 for player char), statuses
         update_status(params[0], params[1]);
         break;
-      case 'fade_out_enemy':
+      case 'fade_enemy':
         // params: enemy_number
         fade_out_enemy(params[0]);
         break;
@@ -116,6 +116,12 @@ Game.prototype.performNextAnimation = function() {
       case 'add_player_card':
         // params: card_dom
         $('#cards').append(params[0]);
+        break;
+      case 'activate_map':
+        this.activateAdjacentMapCells();
+        break;
+      case 'deactivate_map':
+        deactivate_all_map_cells();
         break;
       default:
         warn('Unimplemented animation type: ' + type);
@@ -271,7 +277,7 @@ Game.prototype.useCard = function(index) {
     } else {
       if (!this.battle[i].faded) {
         this.battle[i].faded = true;
-        this.queueAnimation('fade_out_enemy', [i], 500);
+        this.queueAnimation('fade_enemy', [i], 500);
       }
     }
   }
@@ -358,16 +364,30 @@ Game.prototype.endBattle = function() {
   show_dark_box('You win!');
 }
 
+Game.prototype.activateAdjacentMapCells = function() {
+  
+  if (this.playerX - 1 >= 0) { activate_map_cell(this.playerX-1, this.playerY); }
+  if (this.playerX + 1 >= 0) { activate_map_cell(this.playerX+1, this.playerY); }
+  if (this.playerY - 1 >= 0) { activate_map_cell(this.playerX, this.playerY-1); }
+  if (this.playerY + 1 >= 0) { activate_map_cell(this.playerX, this.playerY+1); }
+}
 Game.prototype.clickMapCell = function(x, y) {
   // Note: Origin is top left, positive y goes downwards
+  if (this.waitingForAnimation) {
+    return;
+  }
   var dx = this.playerX - x;
   var dy = this.playerY - y;
   if (Math.abs(dx) + Math.abs(dy) == 1) {
     move_map_player(x, y);
     this.playerX = x;
     this.playerY = y;
+    this.queueAnimation('deactivate_map', [], 400);
+    this.queueAnimation('activate_map', [], 0);
   }
 }
 
 var game = new Game();
 initialize_map_divs();
+game.activateAdjacentMapCells();
+explore_map_cell(0,0);
