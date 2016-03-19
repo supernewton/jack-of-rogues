@@ -42,3 +42,11 @@ function copy_array(array) {
   var a = array.slice(0);
   return a;
 }
+
+function copy_2d_array(array) {
+  var out = []
+  for (var i=0; i<array.length; i++) {
+    out.push(array[i].slice(0)); // copy
+  }
+  return out;
+}

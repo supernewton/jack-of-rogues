@@ -1,9 +1,3 @@
-const RNG_MAP_GEN = 0;
-const RNG_ITEM_GEN = 1;
-const RNG_COMBAT = 2;
-const RNG_SHUFFLER = 3;
-const RNG_MISC = 4;
-const NUM_RNGS = 5;
 ///////////////////////////// Game math /////////////////////////////////////////
 function damage_vs_defense(raw_dmg, def) {
   if (raw_dmg <= 0) return 0;
@@ -36,13 +30,14 @@ Game = function() {
   this.playerChar = make_player_char();
   
   // Exploration related game state
-  this.map = [];
   this.playerX = 0;
   this.playerY = 0;
+  this.map = [];
+  this.mapStatus = [];
   for (var i=0; i<MAP_HEIGHT; i++) {
-    this.map.push([]);
+    this.mapStatus.push([]);
     for (var j=0; j<MAP_WIDTH; j++) {
-       this.map[i].push(0);
+       this.mapStatus[i].push(0);
     }
   }
 }
@@ -117,11 +112,13 @@ Game.prototype.performNextAnimation = function() {
         // params: card_dom
         $('#cards').append(params[0]);
         break;
-      case 'activate_map':
-        this.activateAdjacentMapCells();
+      case 'activate_adjacent':
+        // params: x, y
+        this.setAdjacentMapCellsActive(params[0], params[1], true);
         break;
-      case 'deactivate_map':
-        deactivate_all_map_cells();
+      case 'deactivate_adjacent':
+        // params: x, y
+        this.setAdjacentMapCellsActive(params[0], params[1], false);
         break;
       default:
         warn('Unimplemented animation type: ' + type);
@@ -363,31 +360,55 @@ Game.prototype.performPhysicalAttack = function(from_target, to_target, percent)
 Game.prototype.endBattle = function() {
   show_dark_box('You win!');
 }
-
-Game.prototype.activateAdjacentMapCells = function() {
-  
-  if (this.playerX - 1 >= 0) { activate_map_cell(this.playerX-1, this.playerY); }
-  if (this.playerX + 1 >= 0) { activate_map_cell(this.playerX+1, this.playerY); }
-  if (this.playerY - 1 >= 0) { activate_map_cell(this.playerX, this.playerY-1); }
-  if (this.playerY + 1 >= 0) { activate_map_cell(this.playerX, this.playerY+1); }
+Game.prototype.setMapCell = function(x, y, active) {
+  if (this.map[y][x] == 0) {
+    set_map_cell_wall(x, y);
+    return;
+  }
+  var explored = false;
+  if (this.mapStatus[y][x] == 2) {
+    explored = true;
+  }
+  if (this.mapStatus[y][x] == 0) {
+    this.mapStatus[y][x] = 1;
+  }
+  set_map_cell(x, y, active, explored);
 }
+Game.prototype.setAdjacentMapCellsActive = function(x, y, active) {
+  if (x - 1 >= 0) { this.setMapCell(x-1, y, active); }
+  if (x + 1 < MAP_WIDTH) { this.setMapCell(x+1, y, active); }
+  if (y - 1 >= 0) { this.setMapCell(x, y-1, active); }
+  if (y + 1 < MAP_HEIGHT) { this.setMapCell(x, y+1, active); }
+}
+
 Game.prototype.clickMapCell = function(x, y) {
   // Note: Origin is top left, positive y goes downwards
   if (this.waitingForAnimation) {
+    return;
+  }
+  if (this.map[y][x] == 0) {
+    // wall
     return;
   }
   var dx = this.playerX - x;
   var dy = this.playerY - y;
   if (Math.abs(dx) + Math.abs(dy) == 1) {
     move_map_player(x, y);
+    this.mapStatus[y][x] = 2;
+    this.queueAnimation('deactivate_adjacent', [this.playerX, this.playerY], 400);
     this.playerX = x;
     this.playerY = y;
-    this.queueAnimation('deactivate_map', [], 400);
-    this.queueAnimation('activate_map', [], 0);
+    this.queueAnimation('activate_adjacent', [x, y], 0);
   }
 }
 
-var game = new Game();
 initialize_map_divs();
-game.activateAdjacentMapCells();
-explore_map_cell(0,0);
+var game = new Game();
+var results = generate_map(game.rngPool);
+game.map = results[0];
+game.playerX = results[1];
+game.playerY = results[2];
+game.mapStatus[game.playerY][game.playerX] = 2;
+game.setMapCell(game.playerX, game.playerY, false);
+game.setAdjacentMapCellsActive(game.playerX, game.playerY, true);
+teleport_map_player(game.playerX, game.playerY);

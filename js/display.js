@@ -131,13 +131,11 @@ function update_top_text(text) {
   $('#topText').html(text);
 }
 
-var map_is_initialized = false;
-const MAP_WIDTH = 9;
-const MAP_HEIGHT = 6;
+var map_div_initialized = false;
 const MAP_CELL_PIXELS = 50;
 var map_cell_divs = [];
 function initialize_map_divs() {
-  if (map_is_initialized) {
+  if (map_div_initialized) {
     warn('initialize_map_divs called twice!');
     return;
   }
@@ -148,12 +146,12 @@ function initialize_map_divs() {
     map_cell_divs.push([])
     for (var j=0; j<MAP_WIDTH; j++) {
       var map_click_code = 'game.clickMapCell(' + j + ',' + i + ')';
-      var map_cell = $('<div/>', {class: 'mapCell mapCellUnexplored', onclick: map_click_code});
+      var map_cell = $('<div/>', {class: 'mapCell mapCellUnseen', onclick: map_click_code});
       map_row.append(map_cell);
       map_cell_divs[i].push(map_cell);
     }
   }
-  map_is_initialized = true;
+  map_div_initialized = true;
 }
 var map_player_img = $('#mapPlayer');
 function move_map_player(x, y) {
@@ -161,20 +159,37 @@ function move_map_player(x, y) {
   var y_in_pixels = MAP_CELL_PIXELS*y;
   map_player_img.animate({left: x_in_pixels, top: y_in_pixels});
 }
+function teleport_map_player(x, y) {
+  var x_in_pixels = MAP_CELL_PIXELS*x;
+  var y_in_pixels = MAP_CELL_PIXELS*y;
+  map_player_img.css({left: x_in_pixels, top: y_in_pixels});
+}
 function deactivate_all_map_cells() {
   $('.mapCellActive').toggleClass('mapCellActive mapCellInactive');
 }
-function activate_map_cell(x, y) {
+function set_map_cell(x, y, active, explored) {
   if (x < 0 || x >= MAP_WIDTH || y < 0 || y >= MAP_HEIGHT) { return; }
-  map_cell_divs[y][x].toggleClass('mapCellInactive', false);
-  map_cell_divs[y][x].toggleClass('mapCellUnexplored', false);
-  map_cell_divs[y][x].toggleClass('mapCellActive', true);
+  map_cell_divs[y][x].toggleClass('mapCellUnseen', false);
+  map_cell_divs[y][x].toggleClass('mapCellActiveExplored', false);
+  map_cell_divs[y][x].toggleClass('mapCellActiveUnexplored', false);
+  map_cell_divs[y][x].toggleClass('mapCellInactiveExplored', false);
+  map_cell_divs[y][x].toggleClass('mapCellInactiveUnexplored', false);
+  if (active && explored ) {
+    map_cell_divs[y][x].toggleClass('mapCellActiveExplored', true);
+  } else if (active && !explored) {
+    map_cell_divs[y][x].toggleClass('mapCellActiveUnexplored', true);
+  } else if (!active && explored) {
+    map_cell_divs[y][x].toggleClass('mapCellInactiveExplored', true);
+  } else if (!active && !explored) {
+    map_cell_divs[y][x].toggleClass('mapCellInactiveUnexplored', true);
+  }
 }
-function explore_map_cell(x, y) {
+function set_map_cell_wall(x, y) {
   if (x < 0 || x >= MAP_WIDTH || y < 0 || y >= MAP_HEIGHT) { return; }
-  map_cell_divs[y][x].toggleClass('mapCellUnexplored', false);
-  map_cell_divs[y][x].toggleClass('mapCellInactive', true);
+  map_cell_divs[y][x].toggleClass('mapCellUnseen', false);
+  map_cell_divs[y][x].toggleClass('mapCellWall', true);
 }
+
 
 var battle_area_div = $('#battleArea');
 var explore_area_div = $('#exploreArea');

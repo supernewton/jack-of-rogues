@@ -186,22 +186,38 @@ p {
   width: 48px;
   float: left;
 }
-.mapCellActive {
-  border: 1px solid #464646;
-  cursor: pointer;
-  background-color: #FFFFFF;
-}
-.mapCellActive:hover {
-  border: 1px solid #8080FF;
-}
 
-.mapCellInactive {
+.mapCellInactiveExplored {
   border: 1px solid #464646;
   background-color: #D0D0D0;
 }
-.mapCellUnexplored {
+.mapCellActiveExplored {
   border: 1px solid #464646;
+  background-color: #FFFFFF;
+  cursor: pointer;
+}
+.mapCellActiveExplored:hover {
+  border: 1px solid #8080FF;
+}
+.mapCellActiveUnexplored {
+  border: 1px solid #464646;
+  background-image: url("../img/map_active_unexplored.png");
+  cursor: pointer;
+}
+.mapCellActiveUnexplored:hover {
+  border: 1px solid #8080FF;
+}
+.mapCellInactiveUnexplored {
+  border: 1px solid #464646;
+  background-image: url("../img/map_inactive_unexplored.png");
+}
+.mapCellUnseen {
+  border: 1px solid #090909;
   background-color: #090909;
+}
+.mapCellWall {
+  border: 1px solid #666666;
+  background-image: url("../img/map_wall.png");
 }
 
 .mapRow {

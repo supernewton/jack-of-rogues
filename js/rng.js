@@ -1,3 +1,9 @@
+const RNG_MAP_GEN = 0;
+const RNG_ITEM_GEN = 1;
+const RNG_COMBAT = 2;
+const RNG_SHUFFLER = 3;
+const RNG_MISC = 4;
+const NUM_RNGS = 5;
 // RNG parameters
 var RNG_R = 24;
 var RNG_S = 10;
