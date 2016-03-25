@@ -233,6 +233,12 @@ p {
   border: 1px solid #464646;
   position: relative;
 }
+#areaText {
+  padding: 5px;
+}
+.mapChoice {
+  cursor: pointer;
+}
 .mapEntity {
   position: absolute;
 }

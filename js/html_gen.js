@@ -110,3 +110,29 @@ function card_html(card, pos) {
   card_dom.append(title_dom, cost_dom, text_dom);
   return card_dom;
 }
+
+function map_event_html(map_event) {
+  var div_dom = $('<div/>');
+  var p_dom = $('<p/>', {text: map_event.text});
+  div_dom.append(p_dom);
+  
+  var choice_a_dom;
+  if (map_event.choices == undefined) {
+    var choice_p_dom = $('<p/>');
+    choice_a_dom = $('<a/>', {text: 'Continue...', onclick: make_map_event_onclick(0), class: 'mapChoice'});
+    choice_p_dom.append(choice_a_dom);
+    div_dom.append(choice_p_dom);
+  } else {
+    for (var i = 0; i < map_event.choices.length; i++) {
+      var choice_p_dom = $('<p/>');
+      choice_a_dom = $('<a/>', {text: map_event.choices[i].text, onclick: make_map_event_onclick(i), class: 'mapChoice'});
+      choice_p_dom.append(choice_a_dom);
+      div_dom.append(choice_p_dom);
+    }
+  }
+  
+  return div_dom;
+}
+function make_map_event_onclick(i) {
+  return 'game.mapChoice(' + i + ')';
+}

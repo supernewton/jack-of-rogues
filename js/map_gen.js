@@ -46,30 +46,48 @@ function generate_map(rng_pool) {
   var startY = 0;
   var endX = 0;
   var endY = 0;
+  // TODO: Randomly flip map horizontally and/or vertically
   for (var i = 0; i < template.length; i++) {
     for (var j = 0; j < template[i].length; j++) {
-      if (template[i][j] == 2) {
-        if (list2.pop() == 1) {
+      switch (template[i][j]) {
+        case 2:
+          if (list2.pop() == 1) {
+            template[i][j] = 1;
+          } else {
+            template[i][j] = 0;
+          }
+          break;
+        case 3:
+          if (list3.pop() == 1) {
+            template[i][j] = 1;
+          } else {
+            template[i][j] = 0;
+          }
+          break;
+        case 8:
+          startX = j;
+          startY = i;
           template[i][j] = 1;
-        } else {
-          template[i][j] = 0;
-        }
-      } else if (template[i][j] == 3) {
-        if (list3.pop() == 1) {
+          break;
+        case 9:
+          endX = j;
+          endY = i;
           template[i][j] = 1;
-        } else {
-          template[i][j] = 0;
-        }
-      } else if (template[i][j] == 8) {
-        startX = j;
-        startY = i;
-      } else if (template[i][j] == 9) {
-        endX = j;
-        endY = i;
+          break;
+        default:
+          break;
       }
     }
   }
-  // TODO: Randomly flip map horizontally and/or vertically
+  
+  for (var i = 0; i < template.length; i++) {
+    for (var j = 0; j < template[i].length; j++) {
+      if (template[i][j] == 1) {
+        template[i][j] = rng_pool.getInt(RNG_MAP_GEN, 1, 2);
+      }
+    }
+  }
+  
   return [template, startX, startY, endX, endY];
 }
 
@@ -92,3 +110,19 @@ var templates = [
    [0, 3, 3, 1, 2, 1, 0, 0, 0],
    [0, 0, 0, 3, 0, 0, 0, 0, 0]]
 ]
+
+
+var map_events = [
+  { id: 0,
+    text: "There is nothing else special here." },
+  { id: 1,
+    text: "This room is basically empty. There are no signs of life here nor any loot worth taking." },
+  { id: 2,
+    text: "As you enter the room, you are greeted by monsters!",
+    choices: [
+       { text: "Battle!", effect: "battle" },
+       { text: "Other choice! (Also battle)", effect: "battle" }
+    ]
+  }
+  // don't forget comma
+];

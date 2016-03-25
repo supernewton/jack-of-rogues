@@ -201,10 +201,16 @@ function display_battle_mode() {
   cards_div.toggleClass('hide', false);
   area_text_div.toggleClass('hide', true);
 }
-
 function display_explore_mode() {
   battle_area_div.toggleClass('hide', true);
   explore_area_div.toggleClass('hide', false);
   cards_div.toggleClass('hide', true);
   area_text_div.toggleClass('hide', false);
+}
+function update_area_text(map_event) {
+  area_text_div.empty();
+  area_text_div.append(map_event_html(map_event));
+}
+function clear_area_text() {
+  area_text_div.empty();
 }

@@ -40,6 +40,8 @@ Game = function() {
        this.mapStatus[i].push(0);
     }
   }
+  this.currentMapEvent = map_events[0];
+  this.inMapEvent = false;
 }
 
 Game.prototype.queueAnimation = function(type, params, delay) {
@@ -120,6 +122,12 @@ Game.prototype.performNextAnimation = function() {
         // params: x, y
         this.setAdjacentMapCellsActive(params[0], params[1], false);
         break;
+      case 'update_area_text':
+        this.updateAreaText();
+        break;
+      case 'clear_area_text':
+        clear_area_text();
+        break;
       default:
         warn('Unimplemented animation type: ' + type);
         break;
@@ -148,6 +156,8 @@ Game.prototype.startBattle = function(enemy_ids) {
   this.battle = [];
   var css_class = enemy_css_class(enemy_ids.length);
   var html = '';
+  var battle_area = $('#battleArea');
+  battle_area.empty();
   for (var i = 0; i < enemy_ids.length; i++) {
     var enemy = make_enemy(enemy_ids[i], i, get_name_num(enemy_ids, i));
     this.rngPool.shuffle(RNG_SHUFFLER, enemy.deck);
@@ -156,12 +166,16 @@ Game.prototype.startBattle = function(enemy_ids) {
       enemy.hand.push(cards_data[card_num]);
     }
     this.battle.push(enemy);
-    $('#battleArea').append(get_enemy_html(enemy, css_class));
+    
+    battle_area.append(get_enemy_html(enemy, css_class));
   }
   
   this.playerChar.mp = this.playerChar.max_mp;
   this.playerChar.status = [];
   this.playerChar.deck = copy_array(this.playerChar.decklist);
+  this.playerChar.hand = [];
+  this.playerChar.discard = [];
+  $('.card').remove(); // TODO: properly refactor into display functions
   this.rngPool.shuffle(RNG_SHUFFLER, this.playerChar.deck);
   for (var i = 0; i < this.playerChar.start_hand_size; i++) {
     this.playerDrawCard();
@@ -358,7 +372,10 @@ Game.prototype.performPhysicalAttack = function(from_target, to_target, percent)
 }
 
 Game.prototype.endBattle = function() {
-  show_dark_box('You win!');
+  // TODO: end battle text
+  this.queueAnimation('clear_area_text', [], 0);
+  this.queueAnimation('activate_adjacent', [this.playerX, this.playerY], 0);
+  display_explore_mode();
 }
 Game.prototype.setMapCell = function(x, y, active) {
   if (this.map[y][x] == 0) {
@@ -383,7 +400,7 @@ Game.prototype.setAdjacentMapCellsActive = function(x, y, active) {
 
 Game.prototype.clickMapCell = function(x, y) {
   // Note: Origin is top left, positive y goes downwards
-  if (this.waitingForAnimation) {
+  if (this.waitingForAnimation || this.inMapEvent) {
     return;
   }
   if (this.map[y][x] == 0) {
@@ -394,12 +411,41 @@ Game.prototype.clickMapCell = function(x, y) {
   var dy = this.playerY - y;
   if (Math.abs(dx) + Math.abs(dy) == 1) {
     move_map_player(x, y);
+    if (this.mapStatus[y][x] == 2) {
+      this.currentMapEvent = map_events[0];
+    } else {
+      this.currentMapEvent = map_events[this.map[y][x]];
+      this.inMapEvent = true;
+    }
     this.mapStatus[y][x] = 2;
     this.queueAnimation('deactivate_adjacent', [this.playerX, this.playerY], 400);
     this.playerX = x;
     this.playerY = y;
-    this.queueAnimation('activate_adjacent', [x, y], 0);
+    this.queueAnimation('update_area_text', [], 0);
+    if (!this.inMapEvent) {
+      this.queueAnimation('activate_adjacent', [x, y], 0);
+    }
   }
+}
+
+Game.prototype.mapChoice = function(i) {
+  if (this.currentMapEvent.choices == undefined) {
+    this.queueAnimation('clear_area_text', [], 0);
+    this.queueAnimation('activate_adjacent', [this.playerX, this.playerY], 0);
+    this.inMapEvent = false;
+  } else {
+    if (i >= this.currentMapEvent.choices.length || i < 0) { error("Invalid map choice!"); return; }
+    var choice = this.currentMapEvent.choices[i];
+    if (choice.effect == "battle") {
+      this.inMapEvent = false;
+      this.startBattle([0, 0, 0]);
+    }
+    // TODO: more stuff...
+  }
+}
+
+Game.prototype.updateAreaText = function() {
+  update_area_text(this.currentMapEvent);
 }
 
 initialize_map_divs();
